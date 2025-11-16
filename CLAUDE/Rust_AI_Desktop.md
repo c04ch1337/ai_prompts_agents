@@ -955,4 +955,119 @@ mod tests {
 
 ## Security Rules
 
-### API
+### API Keys
+- NEVER hardcode API keys
+- Load from environment variables only
+- Encrypt API keys at rest
+- Use secure key derivation (PBKDF2/Argon2)
+
+### Tool Safety
+- Sandbox all code execution tools
+- Require user confirmation for dangerous operations
+- Validate all file paths (prevent directory traversal)
+- Limit network access for tools
+- Set execution timeouts
+
+```rust
+// Good: Path validation
+pub fn validate_path(path: &Path, allowed_dirs: &[PathBuf]) -> Result<(), SecurityError> {
+    let canonical = path.canonicalize()
+        .map_err(|_| SecurityError::InvalidPath)?;
+    
+    if !allowed_dirs.iter().any(|dir| canonical.starts_with(dir)) {
+        return Err(SecurityError::PathNotAllowed);
+    }
+    
+    Ok(())
+}
+```
+
+### Input Validation
+- Sanitize all user inputs
+- Validate data before deserialization
+- Implement rate limiting
+- Check content length limits
+
+## Code Style
+
+### Formatting
+- Use `rustfmt` (run: `cargo fmt`)
+- Max line length: 100 characters
+- Use 4 spaces for indentation
+
+### Naming Conventions
+- `snake_case` for functions, variables, modules
+- `PascalCase` for types, traits, enums
+- `SCREAMING_SNAKE_CASE` for constants
+- Prefix private items with underscore when unused
+
+### Comments
+- Use `///` for public API documentation
+- Use `//` for implementation comments
+- Document all public interfaces
+- Explain "why" not "what"
+
+```rust
+/// Executes a tool with the given input.
+///
+/// # Arguments
+/// * `tool_name` - The name of the tool to execute
+/// * `input` - The input to pass to the tool
+///
+/// # Returns
+/// The tool's output as a string
+///
+/// # Errors
+/// Returns `AgentError::ToolNotFound` if the tool doesn't exist
+pub async fn execute_tool(&self, tool_name: &str, input: &str) -> Result<String, AgentError> {
+    // Implementation
+}
+```
+
+## Git Workflow
+
+### Commit Messages
+```
+type(scope): subject
+
+body
+
+footer
+```
+
+Types: feat, fix, docs, style, refactor, test, chore
+
+Example:
+```
+feat(agent): implement chain-of-thought reasoning
+
+Add new reasoning engine that breaks down complex tasks
+into sequential steps with reflection.
+
+Closes #123
+```
+
+### Branch Naming
+- `feature/description`
+- `fix/description`
+- `refactor/description`
+
+## AI Prompt Engineering
+
+When working with this codebase, provide context about:
+1. Which layer you're working in (core/application/infrastructure)
+2. What dependencies are allowed in that layer
+3. The relevant trait interfaces
+4. Error handling requirements
+
+Example prompt:
+```
+I'm implementing a new tool in the infrastructure layer.
+The tool should implement the Tool trait from core/tools.
+Please help me create a ModbusTool that reads from industrial sensors.
+The tool should handle connection errors gracefully and timeout after 5 seconds.
+```
+
+---
+
+# END OF .cursorrules
