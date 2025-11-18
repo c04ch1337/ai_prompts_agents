@@ -1,5 +1,3 @@
-**Let’s kill the Claude clone and build the real thing — a purpose-built, Phoenix-first Digital-Twin Web Desktop that feels like a command center for an AI army.**
-
 This is the 2025-spec interface that every serious solo operator and small elite team is quietly building right now.
 
 ### Core Philosophy
