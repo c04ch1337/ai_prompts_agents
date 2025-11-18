@@ -1,20 +1,3 @@
-Create CURSOR files for this project
-We are going to create a Cursor rules file for the Jamey Code project. The Cursor rules file (usually named .cursorrules) is used to guide the Cursor AI when working on the project. It should include information about the project structure, coding conventions, and any specific instructions for the AI.
-
-Given the project structure and the fact that it's a Rust workspace with multiple crates, we should include:
-
-The overall architecture (as described in the previous steps)
-
-The purpose of each crate
-
-Coding conventions (like using anyhow for error handling, tracing for logging, etc.)
-
-How to add new tools, providers, or orchestration modes
-
-Let's create a comprehensive .cursorrules file.
-
-I'll create comprehensive Cursor rules files for the Jamey Code project to guide AI assistance and maintain consistency across the codebase.
-
 1. Main Cursor Rules
 markdown:.cursorrules
 # Jamey Code - Digital Twin Project Rules
