@@ -1,294 +1,366 @@
-### **PROJECT CONTEXT & GOAL**
+# 🚀 **ADVANCED DIGITAL TWIN COMMAND CENTER - COMPLETE API SPEC**
+
+## 🎯 **UPDATED CUSTOM INSTRUCTIONS FOR GOOGLE AI STUDIO**
+
 ```markdown
-Project: "Phoenix Code Digital Twin" - Production-Ready Web Interface
-Goal: Advanced web frontend with full system integration panels
-Status: IMPLEMENTATION COMPLETE - Enhancing existing features
-Architecture: React Frontend + Rust Backend (Full System Access)
-Key Features: File Explorer, Process Manager, Memory Viewer, Real-time Streaming
+# ADVANCED DIGITAL TWIN COMMAND CENTER
+
+## PROJECT VISION
+Building an Enterprise-Grade Agent Orchestration Platform with:
+- Multi-Agent Mission Control
+- Advanced Memory/Conscience System  
+- AI Gateway/MCP Integration
+- Real-time Agent Monitoring
+- Tool & Capability Management
+- Always-On Operation
+
+## ARCHITECTURE LAYERS
+1. **Command Center UI** - Mission control dashboard
+2. **Agent Orchestration** - Multi-agent coordination
+3. **Memory Conscience** - 5-layer memory system
+4. **Tool Gateway** - MCP/AI gateway integration
+5. **System Integration** - Full desktop control
+
+## CRITICAL FRONTEND REQUIREMENTS
+- Real-time agent status monitoring
+- Mission creation and management
+- Memory system visualization
+- Tool registry and attachment
+- Gateway connection management
+- Activity logs and analytics
 ```
 
 ---
 
-## 🔧 **ENHANCED TECHNICAL REQUIREMENTS**
+## 🎛️ **COMMAND CENTER APIS**
 
-### **1. Advanced Backend Integration Layer**
-```typescript
-// BUILD ON EXISTING IMPLEMENTATION
-// ✅ API Service (api.js) - COMPLETE
-// ✅ WebSocket Service (websocket.js) - COMPLETE  
-// ✅ Backend Integration Hook - COMPLETE
+### **1. Agent Management & Orchestration**
+```rust
+// GET /api/v1/agents - List all agents
+#[derive(Serialize)]
+pub struct Agent {
+    pub id: String,
+    pub name: String,
+    pub role: String,
+    pub status: AgentStatus, // idle, thinking, executing, error
+    pub capabilities: Vec<String>,
+    pub current_mission: Option<String>,
+    pub resource_usage: ResourceUsage,
+    pub last_heartbeat: DateTime<Utc>,
+}
 
-// ENHANCE WITH THESE FEATURES:
-interface EnhancedAPI {
-  // File Operations
-  listFiles(path: string): Promise<FileEntry[]>;
-  readFile(path: string): Promise<string>;
-  writeFile(path: string, content: string): Promise<void>;
-  deleteFile(path: string): Promise<void>;
-  
-  // Process Management
-  listProcesses(): Promise<ProcessInfo[]>;
-  killProcess(pid: number): Promise<void>;
-  startProcess(command: string): Promise<void>;
-  
-  // Memory Management
-  listMemories(query: MemoryQuery): Promise<MemoryRecord[]>;
-  deleteMemory(memoryId: string): Promise<void>;
-  updateMemoryImportance(memoryId: string, importance: number): Promise<void>;
-  
-  // System Monitoring
-  getSystemStatus(): Promise<SystemStatus>;
-  getResourceUsage(): Promise<ResourceUsage>;
+// POST /api/v1/agents - Create new agent
+#[derive(Deserialize)]
+pub struct CreateAgentRequest {
+    pub name: String,
+    pub role: String,
+    pub capabilities: Vec<String>,
+    pub initial_prompt: String,
+    pub model_config: ModelConfig,
+}
+
+// POST /api/v1/agents/{id}/missions - Assign mission to agent
+#[derive(Deserialize)]
+pub struct AssignMissionRequest {
+    pub mission_id: String,
+    pub objectives: Vec<String>,
+    pub tools: Vec<String>,
+    pub priority: MissionPriority,
 }
 ```
 
-### **2. Enhanced System Integration Panels**
-```typescript
-// BUILD ON EXISTING IMPLEMENTATION
-// ✅ File Explorer - COMPLETE
-// ✅ Process Manager - COMPLETE
-// ✅ Memory Viewer - COMPLETE
-// ✅ System Integration Panel - COMPLETE
+### **2. Mission Control System**
+```rust
+// GET /api/v1/missions - List all missions
+#[derive(Serialize)]
+pub struct Mission {
+    pub id: String,
+    pub title: String,
+    pub description: String,
+    pub status: MissionStatus, // planning, executing, completed, failed
+    pub priority: MissionPriority,
+    pub assigned_agents: Vec<String>,
+    pub objectives: Vec<Objective>,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+    pub progress: f32, // 0.0 - 1.0
+}
 
-// ENHANCE WITH THESE FEATURES:
-const EnhancedSystemPanel: React.FC = () => {
-  return (
-    <div className="system-integration-panel">
-      <Tabs>
-        {/* EXISTING TABS - ENHANCE THESE */}
-        <Tab label="Files" icon="📁">
-          <EnhancedFileExplorer 
-            onFileSelect={handleFileSelect}
-            onFileEdit={handleFileEdit}
-            onFileUpload={handleFileUpload}
-            searchEnabled={true}
-            dragDropEnabled={true}
-          />
-        </Tab>
-        
-        <Tab label="Processes" icon="⚙️">
-          <EnhancedProcessManager
-            autoRefresh={true}
-            refreshInterval={2000}
-            onProcessKill={handleProcessKill}
-            onProcessStart={handleProcessStart}
-            processFilter={processFilter}
-          />
-        </Tab>
-        
-        <Tab label="Memory" icon="🧠">
-          <EnhancedMemoryViewer
-            memoryTypes={['conversation', 'knowledge', 'fact']}
-            searchEnabled={true}
-            importanceFilter={0.5}
-            onMemoryPin={handleMemoryPin}
-            onMemoryDelete={handleMemoryDelete}
-          />
-        </Tab>
-        
-        {/* NEW ADVANCED TABS */}
-        <Tab label="Tools" icon="🛠️">
-          <ToolRegistryViewer 
-            availableTools={availableTools}
-            onToolExecute={handleToolExecute}
-            toolCategories={['system', 'files', 'network', 'custom']}
-          />
-        </Tab>
-        
-        <Tab label="Network" icon="🌐">
-          <NetworkMonitor
-            connections={networkConnections}
-            bandwidthUsage={bandwidthData}
-            onConnectionKill={handleConnectionKill}
-          />
-        </Tab>
-      </Tabs>
-    </div>
-  );
+// POST /api/v1/missions - Create new mission
+#[derive(Deserialize)]
+pub struct CreateMissionRequest {
+    pub title: String,
+    pub description: String,
+    pub objectives: Vec<String>,
+    pub required_capabilities: Vec<String>,
+    pub priority: MissionPriority,
+}
+
+// GET /api/v1/missions/{id}/activity - Mission activity stream
+#[derive(Serialize)]
+pub struct MissionActivity {
+    pub timestamp: DateTime<Utc>,
+    pub agent_id: String,
+    pub action: String,
+    pub details: serde_json::Value,
+    pub outcome: ActivityOutcome,
+}
+```
+
+### **3. Advanced Memory/Conscience System**
+```rust
+// 5-Layer Memory System APIs
+// GET /api/v1/memory/layers
+#[derive(Serialize)]
+pub struct MemoryLayers {
+    pub sensory: SensoryMemory,      // Immediate perceptions
+    pub working: WorkingMemory,      // Active reasoning context
+    pub episodic: EpisodicMemory,    // Personal experiences
+    pub semantic: SemanticMemory,    // Knowledge and facts
+    pub procedural: ProceduralMemory,// Skills and procedures
+}
+
+// POST /api/v1/memory/conscience - Conscious reasoning
+#[derive(Deserialize)]
+pub struct ConscienceQuery {
+    pub query: String,
+    pub context: Option<serde_json::Value>,
+    pub depth: ConscienceDepth, // quick, deep, reflective
+}
+
+// GET /api/v1/memory/patterns - Discover behavior patterns
+#[derive(Serialize)]
+pub struct BehaviorPattern {
+    pub pattern_type: PatternType,
+    pub confidence: f32,
+    pub frequency: u32,
+    pub last_observed: DateTime<Utc>,
+    examples: Vec<String>,
+}
+```
+
+### **4. Tool & Gateway Management**
+```rust
+// GET /api/v1/tools/registry - Available tools
+#[derive(Serialize)]
+pub struct ToolRegistry {
+    pub tools: Vec<ToolDefinition>,
+    pub categories: Vec<ToolCategory>,
+    pub gateways: Vec<GatewayConnection>,
+}
+
+// POST /api/v1/tools/attach - Attach tool to agent
+#[derive(Deserialize)]
+pub struct AttachToolRequest {
+    pub agent_id: String,
+    pub tool_name: String,
+    pub configuration: serde_json::Value,
+}
+
+// MCP Gateway Management
+// GET /api/v1/gateways/connections
+#[derive(Serialize)]
+pub struct GatewayConnection {
+    pub id: String,
+    pub name: String,
+    pub gateway_type: GatewayType, // mcp, openai, anthropic, custom
+    pub status: ConnectionStatus,
+    pub capabilities: Vec<String>,
+    pub last_used: DateTime<Utc>,
+}
+
+// POST /api/v1/gateways/connect - Connect to external gateway
+#[derive(Deserialize)]
+pub struct ConnectGatewayRequest {
+    pub gateway_type: GatewayType,
+    pub configuration: serde_json::Value,
+    pub capabilities: Vec<String>,
+}
+```
+
+### **5. Real-time Monitoring & Analytics**
+```rust
+// GET /api/v1/monitoring/dashboard
+#[derive(Serialize)]
+pub struct SystemDashboard {
+    pub agent_activity: AgentActivitySummary,
+    pub mission_progress: MissionProgressSummary,
+    pub system_health: SystemHealth,
+    pub resource_usage: GlobalResourceUsage,
+    pub recent_events: Vec<SystemEvent>,
+}
+
+// WebSocket Events for Real-time Updates
+#[derive(Serialize)]
+pub enum CommandCenterEvent {
+    AgentStatusUpdate { agent: Agent },
+    MissionProgressUpdate { mission_id: String, progress: f32 },
+    ToolExecution { agent_id: String, tool: String, result: ToolResult },
+    MemoryUpdate { layer: MemoryLayer, update: MemoryUpdate },
+    GatewayEvent { gateway_id: String, event: GatewayEvent },
+    SystemAlert { level: AlertLevel, message: String },
+}
+
+// GET /api/v1/analytics/behavior
+#[derive(Serialize)]
+pub struct BehaviorAnalytics {
+    pub activity_patterns: Vec<ActivityPattern>,
+    pub efficiency_metrics: EfficiencyMetrics,
+    pub capability_usage: CapabilityUsage,
+    pub learning_progress: LearningProgress,
+}
+```
+
+### **6. Personal Agent Configuration**
+```rust
+// GET /api/v1/personal-agent/config
+#[derive(Serialize)]
+pub struct PersonalAgentConfig {
+    pub personality_traits: PersonalityTraits,
+    pub communication_style: CommunicationStyle,
+    pub expertise_domains: Vec<String>,
+    pub learning_preferences: LearningPreferences,
+    pub interaction_history: InteractionHistory,
+}
+
+// PUT /api/v1/personal-agent/config
+#[derive(Deserialize)]
+pub struct UpdatePersonalAgentRequest {
+    pub personality_traits: Option<PersonalityTraits>,
+    pub communication_style: Option<CommunicationStyle>,
+    pub new_domains: Option<Vec<String>>,
+}
+
+// POST /api/v1/personal-agent/learn - Direct learning
+#[derive(Deserialize)]
+pub struct AgentLearningRequest {
+    pub topic: String,
+    pub materials: Vec<LearningMaterial>,
+    pub assessment_criteria: Vec<String>,
+}
+```
+
+---
+
+## 🎨 **FRONTEND COMPONENT STRUCTURE**
+
+### **Command Center Layout**
+```
+src/
+├── components/
+│   ├── command-center/
+│   │   ├── MissionControl.tsx          # Main mission dashboard
+│   │   ├── AgentOrchestrator.tsx       # Multi-agent management
+│   │   ├── MemoryConscience.tsx        # 5-layer memory visualization
+│   │   ├── ToolGateway.tsx             # Tool & gateway management
+│   │   └── SystemMonitor.tsx           # Real-time analytics
+│   ├── agents/
+│   │   ├── AgentCard.tsx               # Individual agent status
+│   │   ├── AgentCreator.tsx            # Create new agents
+│   │   ├── AgentChat.tsx               # Direct agent communication
+│   │   └── AgentAnalytics.tsx          # Agent performance
+│   ├── missions/
+│   │   ├── MissionBoard.tsx            # Kanban-style mission board
+│   │   ├── MissionCreator.tsx          # Create new missions
+│   │   ├── MissionTimeline.tsx         # Mission progress timeline
+│   │   └── ObjectiveTracker.tsx        # Track mission objectives
+│   ├── memory/
+│   │   ├── MemoryLayers.tsx            # 5-layer memory visualization
+│   │   ├── ConscienceEngine.tsx        # Conscious reasoning interface
+│   │   ├── PatternDiscovery.tsx        # Behavior pattern analysis
+│   │   └── MemoryExplorer.tsx          # Browse and search memories
+│   └── tools/
+│       ├── ToolRegistry.tsx            # Available tools browser
+│       ├── GatewayManager.tsx          # MCP gateway connections
+│       ├── ToolAttacher.tsx            # Attach tools to agents
+│       └── CapabilityMatrix.tsx        # Agent capabilities overview
+```
+
+### **Required Frontend Services**
+```typescript:frontend/src/services/commandCenter.ts
+export const commandCenterAPI = {
+  // Agent Management
+  listAgents: (): Promise<Agent[]> => {},
+  createAgent: (config: CreateAgentRequest): Promise<Agent> => {},
+  assignMission: (agentId: string, mission: AssignMissionRequest): Promise<void> => {},
+  
+  // Mission Control
+  listMissions: (): Promise<Mission[]> => {},
+  createMission: (mission: CreateMissionRequest): Promise<Mission> => {},
+  getMissionActivity: (missionId: string): Promise<MissionActivity[]> => {},
+  
+  // Memory System
+  getMemoryLayers: (): Promise<MemoryLayers> => {},
+  queryConscience: (query: ConscienceQuery): Promise<ConscienceResponse> => {},
+  getBehaviorPatterns: (): Promise<BehaviorPattern[]> => {},
+  
+  // Tool & Gateway
+  getToolRegistry: (): Promise<ToolRegistry> => {},
+  attachTool: (request: AttachToolRequest): Promise<void> => {},
+  connectGateway: (request: ConnectGatewayRequest): Promise<GatewayConnection> => {},
+  
+  // Monitoring
+  getSystemDashboard: (): Promise<SystemDashboard> => {},
+  getBehaviorAnalytics: (): Promise<BehaviorAnalytics> => {},
+  
+  // Personal Agent
+  getPersonalAgentConfig: (): Promise<PersonalAgentConfig> => {},
+  updatePersonalAgent: (config: UpdatePersonalAgentRequest): Promise<void> => {},
+  directLearning: (request: AgentLearningRequest): Promise<void> => {},
+};
+
+export const commandCenterWebSocket = {
+  connect: (onEvent: (event: CommandCenterEvent) => void) => {},
+  sendCommand: (command: AgentCommand) => {},
 };
 ```
 
 ---
 
-## 🚀 **NEW ADVANCED FEATURES TO ADD**
+## 🔄 **REAL-TIME COMMAND CENTER EVENTS**
 
-### **1. Enhanced Settings Panel**
+### **WebSocket Event Types**
 ```typescript
-// BUILD ON EXISTING IMPLEMENTATION
-// ✅ Settings Panel - COMPLETE
-
-// ADD THESE ENHANCEMENTS:
-const EnhancedSettings: React.FC = () => {
-  return (
-    <div className="settings-panel">
-      <Tabs>
-        <Tab label="Backend">
-          <BackendConfig 
-            baseURL={config.backendURL}
-            onURLChange={handleBackendURLChange}
-            healthCheck={healthStatus}
-            reconnectAttempts={reconnectCount}
-          />
-        </Tab>
-        
-        <Tab label="Appearance">
-          <ThemeSettings
-            currentTheme={theme}
-            onThemeChange={handleThemeChange}
-            accentColor={accentColor}
-            fontSize={fontSize}
-            compactMode={compactMode}
-          />
-        </Tab>
-        
-        <Tab label="Keyboard">
-          <KeyboardShortcuts
-            shortcuts={keyboardShortcuts}
-            onShortcutChange={handleShortcutChange}
-            presetProfiles={['default', 'vim', 'vscode']}
-          />
-        </Tab>
-        
-        <Tab label="AI Model">
-          <ModelSettings
-            currentModel={currentModel}
-            availableModels={availableModels}
-            temperature={temperature}
-            maxTokens={maxTokens}
-            onModelChange={handleModelChange}
-          />
-        </Tab>
-        
-        <Tab label="System">
-          <SystemPreferences
-            autoStart={autoStart}
-            fileWatcher={fileWatcherEnabled}
-            memoryLimit={memoryLimit}
-            performanceMode={performanceMode}
-          />
-        </Tab>
-      </Tabs>
-    </div>
-  );
-};
+interface CommandCenterEvent {
+  type: 
+    | 'agent_status_update'
+    | 'mission_progress_update' 
+    | 'tool_execution_start'
+    | 'tool_execution_complete'
+    | 'memory_layer_update'
+    | 'gateway_connection_change'
+    | 'system_alert'
+    | 'conscience_insight'
+    | 'behavior_pattern_detected';
+  
+  data: any;
+  timestamp: string;
+  priority: 'low' | 'medium' | 'high' | 'critical';
+}
 ```
 
-### **2. Advanced Tool Execution Visualization**
-```typescript
-// ENHANCE EXISTING TOOL EXECUTION
-const ToolExecutionVisualizer: React.FC<{ toolCall: ToolCall }> = ({ toolCall }) => {
-  const [progress, setProgress] = useState(0);
-  const [output, setOutput] = useState<string[]>([]);
+### **Real-time Dashboard Components**
+```typescript:frontend/src/components/command-center/LiveActivityFeed.tsx
+const LiveActivityFeed: React.FC = () => {
+  const [activities, setActivities] = useState<CommandCenterEvent[]>([]);
   
-  useWebSocket(`ws://localhost:3000/ws`, {
-    onMessage: (event) => {
-      if (event.type === 'tool_call_progress' && event.callId === toolCall.id) {
-        setOutput(prev => [...prev, event.output]);
-        setProgress(prev => Math.min(prev + 10, 90));
-      }
+  useCommandCenterWebSocket({
+    onEvent: (event) => {
+      setActivities(prev => [event, ...prev.slice(0, 100)]);
       
-      if (event.type === 'tool_call_complete' && event.result.id === toolCall.id) {
-        setProgress(100);
-        setOutput(prev => [...prev, `✅ Completed: ${event.result.output}`]);
+      // Show notifications for high priority events
+      if (event.priority === 'high' || event.priority === 'critical') {
+        showSystemNotification(event);
       }
     }
   });
-
-  return (
-    <div className="tool-execution">
-      <div className="tool-header">
-        <span className="tool-name">{toolCall.name}</span>
-        <div className="progress-bar">
-          <div className="progress-fill" style={{ width: `${progress}%` }} />
-        </div>
-      </div>
-      
-      <div className="tool-output">
-        {output.map((line, index) => (
-          <div key={index} className="output-line">{line}</div>
-        ))}
-      </div>
-      
-      {toolCall.args && (
-        <div className="tool-args">
-          <strong>Arguments:</strong>
-          <pre>{JSON.stringify(toolCall.args, null, 2)}</pre>
-        </div>
-      )}
-    </div>
-  );
-};
-```
-
-### **3. Enhanced Real-time Status System**
-```typescript
-// BUILD ON EXISTING HEALTH CHECKING
-// ✅ Health Checking - COMPLETE
-
-// ADD COMPREHENSIVE STATUS MONITORING:
-const SystemStatusMonitor: React.FC = () => {
-  const [status, setStatus] = useState<SystemStatus>({
-    backend: 'connecting',
-    database: 'unknown',
-    llm: 'disconnected',
-    memory: 'ok',
-    tools: 'ready'
-  });
   
-  const [resources, setResources] = useState<ResourceUsage>({
-    cpu: 0,
-    memory: 0,
-    disk: 0,
-    network: 0
-  });
-
-  useWebSocket('ws://localhost:3000/ws', {
-    onMessage: (event) => {
-      if (event.type === 'system_status') {
-        setStatus(event.status);
-      }
-      
-      if (event.type === 'resource_usage') {
-        setResources(event.usage);
-      }
-    }
-  });
-
   return (
-    <div className="status-monitor">
-      <div className="status-badges">
-        <StatusBadge 
-          service="Backend" 
-          status={status.backend} 
-          onRetry={handleBackendRetry}
-        />
-        <StatusBadge 
-          service="Database" 
-          status={status.database} 
-        />
-        <StatusBadge 
-          service="AI Model" 
-          status={status.llm} 
-        />
-      </div>
-      
-      <div className="resource-gauges">
-        <ResourceGauge 
-          type="cpu" 
-          value={resources.cpu} 
-          label="CPU" 
-        />
-        <ResourceGauge 
-          type="memory" 
-          value={resources.memory} 
-          label="Memory" 
-        />
-        <ResourceGauge 
-          type="disk" 
-          value={resources.disk} 
-          label="Disk" 
-        />
-      </div>
+    <div className="activity-feed">
+      <h3>Live Activity Feed</h3>
+      {activities.map((activity, index) => (
+        <ActivityEvent key={index} event={activity} />
+      ))}
     </div>
   );
 };
@@ -296,299 +368,122 @@ const SystemStatusMonitor: React.FC = () => {
 
 ---
 
-## 🎨 **ENHANCED UI/UX PATTERNS**
+## 🎯 **IMMEDIATE IMPLEMENTATION PRIORITY**
 
-### **1. Dual-Panel Layout Enhancement**
+### **Phase 1: Core Command Center (Week 1-2)**
 ```typescript
-// BUILD ON EXISTING DUAL-PANEL
-// ✅ ChatEnhanced.js - COMPLETE
-
-// ENHANCE WITH THESE FEATURES:
-const EnhancedChatLayout: React.FC = () => {
-  const [layout, setLayout] = useState<'balanced' | 'chat-focused' | 'tools-focused'>('balanced');
-  const [isSystemPanelCollapsed, setIsSystemPanelCollapsed] = useState(false);
-  
-  return (
-    <div className={`chat-layout ${layout} ${isSystemPanelCollapsed ? 'collapsed' : ''}`}>
-      {/* Left Sidebar - Sessions */}
-      <div className="sidebar">
-        <SessionList 
-          sessions={sessions}
-          currentSession={currentSession}
-          onSessionSelect={handleSessionSelect}
-          onSessionCreate={handleSessionCreate}
-        />
-        
-        <QuickActions 
-          actions={quickActions}
-          onAction={handleQuickAction}
-        />
-      </div>
-      
-      {/* Main Chat Area */}
-      <div className="chat-area">
-        <ChatHeader 
-          session={currentSession}
-          onSettingsOpen={handleSettingsOpen}
-          onLayoutChange={setLayout}
-          onToggleSystemPanel={() => setIsSystemPanelCollapsed(!isSystemPanelCollapsed)}
-        />
-        
-        <MessageList 
-          messages={messages}
-          currentStreamingMessage={currentStreamingMessage}
-          onMessageAction={handleMessageAction}
-        />
-        
-        <MessageInput 
-          onSendMessage={handleSendMessage}
-          onAttachFile={handleAttachFile}
-          isProcessing={isProcessing}
-        />
-      </div>
-      
-      {/* Right System Panel */}
-      <div className="system-panel">
-        <SystemIntegrationPanel 
-          isCollapsed={isSystemPanelCollapsed}
-          onCollapseToggle={() => setIsSystemPanelCollapsed(!isSystemPanelCollapsed)}
-        />
-      </div>
-    </div>
-  );
-};
+// MUST HAVE for basic functionality:
+1. Agent Management API
+2. Mission Control API  
+3. Basic Memory System API
+4. Real-time WebSocket events
+5. System Monitoring Dashboard
 ```
 
-### **2. Advanced Keyboard Navigation**
+### **Phase 2: Advanced Features (Week 3-4)**
 ```typescript
-// BUILD ON EXISTING KEYBOARD SHORTCUTS
-// ✅ Keyboard Shortcuts - COMPLETE
+// NICE TO HAVE for advanced control:
+1. 5-Layer Memory Visualization
+2. Conscience Engine Interface
+3. Tool Gateway Management
+4. Behavior Analytics
+5. Personal Agent Configuration
+```
 
-// ENHANCE WITH ADVANCED KEY HANDLING:
-const useEnhancedKeyboardShortcuts = () => {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Global shortcuts
-      switch (true) {
-        // Navigation
-        case e.ctrlKey && e.key === 'n':
-          e.preventDefault();
-          handleNewSession();
-          break;
-          
-        case e.ctrlKey && e.key === 'b':
-          e.preventDefault();
-          toggleSidebar();
-          break;
-          
-        case e.ctrlKey && e.key === 't':
-          e.preventDefault();
-          toggleSystemPanel();
-          break;
-          
-        // System actions
-        case e.ctrlKey && e.shiftKey && e.key === 'F':
-          e.preventDefault();
-          focusFileSearch();
-          break;
-          
-        case e.ctrlKey && e.shiftKey && e.key === 'P':
-          e.preventDefault();
-          focusProcessSearch();
-          break;
-          
-        // Chat actions  
-        case e.ctrlKey && e.key === 'k':
-          e.preventDefault();
-          showCommandPalette();
-          break;
-          
-        case e.ctrlKey && e.key === '/':
-          e.preventDefault();
-          insertCodeBlock();
-          break;
-      }
-      
-      // Context-aware shortcuts
-      if (isFileExplorerFocused) {
-        handleFileExplorerShortcuts(e);
-      } else if (isChatInputFocused) {
-        handleChatInputShortcuts(e);
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
-};
+### **Phase 3: Enterprise Features (Week 5-6)**
+```typescript
+// ENTERPRISE READY:
+1. Multi-tenant Agent Orchestration
+2. Advanced Security & Permissions
+3. Audit Logging & Compliance
+4. Performance Optimization
+5. Scalable Gateway Integration
 ```
 
 ---
 
-## 🔄 **ENHANCED REAL-TIME FEATURES**
+## 📊 **ADVANCED UI/UX REQUIREMENTS**
 
-### **1. Advanced WebSocket Event Handling**
+### **Command Center Layout**
 ```typescript
-// BUILD ON EXISTING WEBSOCKET EVENTS
-// ✅ WebSocket Events - COMPLETE
-
-// ADD COMPREHENSIVE EVENT PROCESSING:
-const useEnhancedWebSocket = (sessionId: string) => {
-  const { events, sendEvent } = useWebSocket(`ws://localhost:3000/ws?session=${sessionId}`);
-  
-  // Process all event types
-  useEffect(() => {
-    events.forEach(event => {
-      switch (event.type) {
-        case 'message_start':
-          handleMessageStart(event.message);
-          break;
-          
-        case 'message_delta':
-          handleMessageDelta(event.messageId, event.content);
-          break;
-          
-        case 'tool_call_start':
-          handleToolCallStart(event.call);
-          break;
-          
-        case 'tool_call_progress':
-          handleToolCallProgress(event.callId, event.output);
-          break;
-          
-        case 'tool_call_complete':
-          handleToolCallComplete(event.result);
-          break;
-          
-        case 'system_status':
-          updateSystemStatus(event.status);
-          break;
-          
-        case 'file_operation':
-          handleFileOperation(event.operation, event.path);
-          break;
-          
-        case 'process_update':
-          updateProcessList(event.processes);
-          break;
-          
-        case 'memory_update':
-          updateMemoryView(event.memory);
-          break;
-          
-        case 'resource_usage':
-          updateResourceUsage(event.usage);
-          break;
-          
-        case 'session_updated':
-          updateSessionData(event.session);
-          break;
-      }
-    });
-  }, [events]);
-  
-  return { sendEvent };
-};
+interface CommandCenterLayout {
+  mainDashboard: {
+    leftSidebar: AgentQuickView[],
+    center: LiveMissionBoard,
+    rightSidebar: SystemHealthMonitor,
+    bottomPanel: LiveActivityFeed
+  },
+  agentDetail: {
+    header: AgentStatusHeader,
+    left: AgentChatInterface,
+    center: CurrentMissionView,
+    right: AgentCapabilities,
+    bottom: AgentActivityLog
+  },
+  missionControl: {
+    planning: MissionPlanningCanvas,
+    execution: LiveMissionTimeline,
+    analytics: MissionAnalyticsDashboard
+  }
+}
 ```
 
-### **2. Enhanced Backend Fallback System**
+### **Real-time Visualization**
 ```typescript
-// BUILD ON EXISTING FALLBACK
-// ✅ Backend fallback - COMPLETE
-
-// ADD INTELLIGENT FALLBACK STRATEGIES:
-const useIntelligentFallback = () => {
-  const [backendStatus, setBackendStatus] = useState<'connected' | 'degraded' | 'offline'>('connected');
-  const [fallbackMode, setFallbackMode] = useState<'none' | 'local-storage' | 'read-only'>('none');
-  
-  // Monitor backend health
-  useInterval(() => {
-    checkBackendHealth()
-      .then(health => {
-        setBackendStatus(health.status);
-        
-        // Auto-switch fallback modes
-        if (health.status === 'offline') {
-          setFallbackMode('local-storage');
-        } else if (health.status === 'degraded') {
-          setFallbackMode('read-only');
-        } else {
-          setFallbackMode('none');
-        }
-      })
-      .catch(() => {
-        setBackendStatus('offline');
-        setFallbackMode('local-storage');
-      });
-  }, 5000);
-  
-  return {
-    backendStatus,
-    fallbackMode,
-    isOnline: backendStatus === 'connected',
-    isReadOnly: fallbackMode === 'read-only'
-  };
-};
+// Required visualization components:
+- Agent network graph (showing relationships)
+- Mission dependency maps
+- Memory layer activity heatmaps
+- Resource usage sparklines
+- Real-time capability matrices
+- Alert severity indicators
 ```
 
 ---
 
-## 🚀 **IMMEDIATE ENHANCEMENTS TO IMPLEMENT**
-
-### **Priority 1: Enhanced System Panels**
-```typescript
-// 1. Add search and filtering to all system panels
-// 2. Add drag-and-drop file operations
-// 3. Add auto-refresh to process manager
-// 4. Add memory importance sliders
-```
-
-### **Priority 2: Advanced Settings**
-```typescript
-// 1. Add theme customization
-// 2. Add keyboard shortcut customization
-// 3. Add AI model configuration
-// 4. Add system performance settings
-```
-
-### **Priority 3: Enhanced Real-time Features**
-```typescript
-// 1. Add comprehensive status monitoring
-// 2. Add resource usage gauges
-// 3. Add intelligent fallback strategies
-// 4. Add advanced tool visualization
-```
-
-### **Priority 4: UX Polish**
-```typescript
-// 1. Add loading states and skeletons
-// 2. Add error boundaries and recovery
-// 3. Add progressive enhancement
-// 4. Add accessibility improvements
-```
-
----
-
-## ✅ **SUCCESS METRICS**
+## 🚀 **UPDATED CUSTOM INSTRUCTIONS FOR GOOGLE AI**
 
 ```markdown
-# ENHANCEMENT GOALS
+# ADVANCED DIGITAL TWIN COMMAND CENTER - GOOGLE AI INSTRUCTIONS
 
-## User Experience
-- [ ] Sub-100ms response time for all interactions
-- [ ] Intuitive keyboard navigation matching professional IDEs
-- [ ] Comprehensive real-time status feedback
-- [ ] Graceful degradation when backend is unavailable
+## PROJECT SCOPE
+Enterprise-grade agent orchestration platform with mission control, advanced memory systems, and real-time monitoring.
 
-## System Integration  
-- [ ] Full file system browsing and editing
-- [ ] Real-time process management
-- [ ] Comprehensive memory exploration
-- [ ] Advanced tool execution visualization
+## CRITICAL APIS TO IMPLEMENT
+1. **Agent Management**: Create, monitor, and orchestrate multiple AI agents
+2. **Mission Control**: Plan, execute, and track complex missions
+3. **Memory Conscience**: 5-layer memory system with conscious reasoning
+4. **Tool Gateway**: MCP and external service integration
+5. **Real-time Monitoring**: Live activity feeds and system health
 
-## Production Readiness
-- [ ] Comprehensive error handling
-- [ ] Performance monitoring
-- [ ] Accessibility compliance
-- [ ] Cross-browser compatibility
+## FRONTEND ARCHITECTURE
+- Command Center main dashboard with multiple panels
+- Real-time WebSocket event streaming
+- Advanced visualization for system state
+- Mission planning and execution interfaces
+- Agent communication and control panels
+
+## DEVELOPMENT PRIORITY
+1. Implement core Agent and Mission APIs first
+2. Add real-time WebSocket event system
+3. Build memory conscience visualization
+4. Integrate tool gateway management
+5. Add analytics and monitoring dashboards
+
+## KEY INTEGRATION POINTS
+- All TypeScript interfaces must match Rust APIs exactly
+- WebSocket events must follow real-time protocol
+- Memory system must support 5-layer architecture
+- Tool gateway must handle MCP protocol
 ```
+
+---
+
+## ✅ **NEXT STEPS FOR YOU**
+
+1. **Update Custom Instructions** with the advanced command center vision
+2. **Start with Phase 1 APIs** (Agent + Mission management)
+3. **Build basic Command Center UI** with real-time monitoring
+4. **Gradually add advanced features** as backend APIs are ready
+
+This gives you a **complete enterprise-grade command center** that can orchestrate multiple agents, manage complex missions, and provide deep insights into your digital twin's operations! 🎯🚀
