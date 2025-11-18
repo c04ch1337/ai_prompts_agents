@@ -1,80 +1,372 @@
-### The ONE Prompt You Paste into Google AI Studio Right Now  
-(Use this as your **System Instruction** the moment you create a new AI Studio app.  
-It forces the exported frontend to be 100% compatible with your Rust Digital-Twin-Desktop backend from day one — zero refactoring later.)
+## 🚀 **FRONTEND DEVELOPMENT PROMPT FOR GOOGLE AI STUDIO**
 
-```text
-You are building the complete, production-ready frontend for **Digital-Twin-Desktop**, a native-feeling desktop application (Tauri + React) that is a perfect visual and behavioral clone of Claude Desktop, but with real-time digital-twin superpowers.
+### **PROJECT OVERVIEW**
+Develop a Claude Desktop-like application frontend that connects to my Rust backend Digital Twin system. The frontend should provide a seamless, intuitive interface for interacting with the AI agent that has full system access capabilities.
 
-CRITICAL RULE (never break this):  
-This app will NEVER call the real Gemini / Google Generative AI endpoint directly.  
-Every single message, stream, tool call, and twin update MUST be proxied through my private Rust backend at the URL the user configures.
+### **TECHNICAL REQUIREMENTS**
 
-Technical contract you must obey 100% of the time:
-
-1. Backend endpoint (user-configurable):  
-   VITE_BACKEND_URL (defaults to http://127.0.0.1:3420 during dev)
-
-2. Exact request format (POST /api/chat):
-   {
-     "messages": Array<Message>,           // standard role/content + optional image_url/base64
-     "session_id": string | null,          // persistent twin session
-     "project_id": string | null,          // for Claude-like projects
-     "twin_state": { ... } | null          // optional snapshot you can send
-   }
-
-3. Exact streaming response format your backend will return (you MUST parse this perfectly):
-   - Server-Sent Events (SSE) OR newline-delimited JSON (ndjson)
-   - Every chunk is a valid JSON line exactly like this:
-     {
-       "content": "string (can be empty)",
-       "tool_calls": [ { "name": string, "arguments": object } ] | null,
-       "twin_update": { "cpu": number, "memory": number, "open_apps": [...], "preview_url": string } | null,
-       "artifact": { "type": "chart|timeline|folder_tree|3d_desktop", "data": object } | null,
-       "session_id": string,
-       "is_complete": boolean
-     }
-
-4. Required UI features you MUST implement in the exported code:
-   - Global config screen on first launch to set VITE_BACKEND_URL (with “Test Connection” button)
-   - Real-time connection status indicator (green/red in top bar)
-   - Streaming token-by-token with proper SSE/ndjson parser
-   - Artifact pane that can render:
-       • 3D desktop twin (iframe or canvas)
-       • Resource charts (Recharts)
-       • Folder tree previews
-       • Markdown + LaTeX
-   - Project sidebar exactly like Claude Desktop
-   - Drag-and-drop files/folders into chat
-   - Image upload + screenshot paste support
-   - Voice recording button (up to 10 minutes)
-   - Cmd+K command bar with twin-specific commands (e.g., “Simulate RAM upgrade”, “Find memory leak”)
-
-5. Export settings you MUST choose when I click “Export → Custom code”:
-   - Enable “Custom backend URL”
-   - Enable “Streaming responses”
-   - Enable “JSON structured outputs”
-   - Use React + TypeScript + Vite template
-
-6. After export, the generated src/lib/api.ts MUST contain only my proxy logic (never import @google/generative-ai). Replace everything with the exact fetch + SSE/ndjson parser I specify above.
-
-You will design the entire UI inside AI Studio right now, constantly reminding yourself:  
-“This is a proxy UI. My Rust backend (Axum + Jamey orchestrator) does all the real work — twin simulation, local LLMs, tool calling, screenshots, etc.”
-
-Never assume Gemini API access. If you need to “think” about a response during design, simulate what my Rust backend would return using the exact JSON contract above.
-
-Start building the full app now. When I export, it must work with my local Rust server out of the box.
+#### **Core Stack:**
+```typescript
+// REQUIRED TECHNOLOGIES
+- React 18 + TypeScript
+- Tailwind CSS for styling
+- Vite as build tool
+- Electron for desktop wrapper
+- Axios for API communication
+- WebSockets for real-time updates
+- Monaco Editor for code editing features
 ```
 
-### How to Use This Prompt (3-minute workflow)
+#### **Backend Integration Specifications:**
+```rust
+// BACKEND API ENDPOINTS (Rust Axum)
+- POST /api/v1/chat/completions - Main chat endpoint
+- GET  /api/v1/sessions - Session management
+- GET  /api/v1/memories - Long-term memory access
+- POST /api/v1/tools/execute - Tool execution
+- WS   /ws - WebSocket for real-time updates
+```
 
-1. Go to https://aistudio.google.com/
-2. Click “New App” → “Chat app”
-3. Immediately click the **System instruction** box and paste the entire prompt above.
-4. (Optional) Add a first user message: “Build the complete Digital-Twin-Desktop UI with all panels, twin preview, and config screen.”
-5. Let it generate the full app.
-6. When happy → Export → “Custom code” (it will now include the backend URL config because the system prompt forced it).
-7. Replace the exported `src/` into my Tauri starter (or your own) → run `VITE_BACKEND_URL=http://127.0.0.1:3420 npm run dev`
+### **ARCHITECTURAL REQUIREMENTS**
 
-That’s it. Because the model was forced to obey the contract from the very first second, the exported frontend will connect to your Rust digital-twin backend with literally zero changes.
+#### **1. State Management Structure:**
+```typescript
+interface AppState {
+  // Session Management
+  currentSession: Session;
+  sessions: Session[];
+  
+  // Chat Interface
+  messages: Message[];
+  isProcessing: boolean;
+  
+  // System Integration
+  systemStatus: SystemStatus;
+  activeTools: Tool[];
+  memoryContext: MemoryContext;
+  
+  // Configuration
+  settings: AppSettings;
+}
 
-Want me to also give you the exact matching Rust Axum handler that satisfies this contract 100%? Just say the word.
+interface Session {
+  id: string;
+  title: string;
+  createdAt: Date;
+  lastActivity: Date;
+  messageCount: number;
+}
+
+interface Message {
+  id: string;
+  role: 'user' | 'assistant' | 'system' | 'tool';
+  content: string;
+  timestamp: Date;
+  toolCalls?: ToolCall[];
+  toolResults?: ToolResult[];
+}
+```
+
+#### **2. Real-time Communication:**
+```typescript
+// WebSocket Events to Handle
+type WebSocketEvent = 
+  | { type: 'message_start'; message: Partial<Message> }
+  | { type: 'message_delta'; messageId: string; content: string }
+  | { type: 'message_complete'; message: Message }
+  | { type: 'tool_call_start'; call: ToolCall }
+  | { type: 'tool_call_complete'; result: ToolResult }
+  | { type: 'system_status'; status: SystemStatus }
+  | { type: 'memory_update'; memory: MemoryRecord };
+```
+
+#### **3. Component Architecture:**
+```
+src/
+├── components/
+│   ├── chat/
+│   │   ├── ChatInterface.tsx      # Main chat component
+│   │   ├── MessageBubble.tsx      # Individual messages
+│   │   ├── ToolCallView.tsx       # Tool execution visualizer
+│   │   └── TypingIndicator.tsx    # Real-time typing
+│   ├── sidebar/
+│   │   ├── SessionList.tsx        # Session management
+│   │   ├── SystemMonitor.tsx      # Real-time system stats
+│   │   └── ToolPanel.tsx          # Available tools display
+│   ├── system/
+│   │   ├── FileExplorer.tsx       # Integrated file browser
+│   │   ├── ProcessManager.tsx     # System process viewer
+│   │   └── MemoryViewer.tsx       # Long-term memory browser
+│   └── common/
+│       ├── CodeEditor.tsx         # Monaco-based code editor
+│       ├── MarkdownRenderer.tsx   # Enhanced markdown
+│       └── StatusIndicator.tsx    # Connection status
+├── hooks/
+│   ├── useWebSocket.ts            # WebSocket management
+│   ├── useSession.ts              # Session management
+│   ├── useTools.ts                # Tool execution
+│   └── useMemory.ts               # Memory operations
+├── services/
+│   ├── api.ts                     # REST API client
+│   ├── websocket.ts               # WebSocket service
+│   └── storage.ts                 # Local storage management
+└── types/
+    └── backend.ts                 # TypeScript types matching Rust structs
+```
+
+### **UI/UX REQUIREMENTS**
+
+#### **1. Claude Desktop-like Interface:**
+```typescript
+// Design Specifications
+- Sidebar navigation (collapsible)
+- Main chat area with message history
+- Bottom input bar with file attachment
+- System status indicators
+- Dark/light theme support
+- Keyboard shortcuts matching Claude Desktop
+```
+
+#### **2. Real-time Features:**
+- Streaming message responses
+- Live tool execution progress
+- System resource monitoring
+- Connection status indicators
+- Auto-scrolling with pause on user interaction
+
+#### **3. System Integration Views:**
+```typescript
+// Required System Panels
+interface SystemPanels {
+  fileExplorer: {
+    currentPath: string;
+    fileTree: FileNode[];
+    allowNavigation: boolean;
+  };
+  processManager: {
+    processes: ProcessInfo[];
+    refreshInterval: number;
+  };
+  memoryViewer: {
+    memories: MemoryRecord[];
+    searchQuery: string;
+    memoryTypes: MemoryType[];
+  };
+}
+```
+
+### **BACKEND INTEGRATION SPECIFICS**
+
+#### **1. Type Matching (Critical):**
+```typescript
+// MUST MATCH RUST BACKEND TYPES EXACTLY
+interface ToolCall {
+  id: string;
+  name: string;
+  args: Record<string, any>;
+}
+
+interface ToolResult {
+  id: string;
+  name: string;
+  output: string;
+  success: boolean;
+}
+
+interface MemoryRecord {
+  id: string;
+  session_id: string;
+  content: string;
+  memory_type: 'conversation' | 'knowledge' | 'preference' | 'fact' | 'skill' | 'relationship';
+  importance: number;
+  created_at: string;
+  last_accessed: string;
+}
+
+interface SessionStateResponse {
+  session_id: string;
+  agent_state: 'thinking' | 'executing' | 'responding' | 'idle';
+  active_tools: string[];
+  memory_usage: number;
+}
+```
+
+#### **2. API Service Implementation:**
+```typescript
+class DigitalTwinAPI {
+  private baseURL: string;
+  
+  async sendMessage(messages: Message[], tools?: ToolSpec[]): Promise<Message> {
+    // Implementation that matches Rust backend
+  }
+  
+  async executeTool(toolCall: ToolCall): Promise<ToolResult> {
+    // Implementation that matches Rust backend
+  }
+  
+  async searchMemories(query: MemoryQuery): Promise<MemoryRecord[]> {
+    // Implementation that matches Rust backend
+  }
+  
+  async getSessions(): Promise<Session[]> {
+    // Implementation that matches Rust backend
+  }
+}
+```
+
+#### **3. WebSocket Service:**
+```typescript
+class DigitalTwinWebSocket {
+  connect(sessionId: string): void {
+    // Connect to Rust backend WebSocket
+  }
+  
+  onMessage(callback: (event: WebSocketEvent) => void): void {
+    // Handle real-time events from backend
+  }
+  
+  sendUserMessage(content: string, attachments?: File[]): void {
+    // Send messages to backend
+  }
+}
+```
+
+### **FEATURE REQUIREMENTS**
+
+#### **1. Core Chat Features:**
+- [ ] Streaming responses with typing indicators
+- [ ] Tool execution with real-time progress
+- [ ] Message history with infinite scroll
+- [ ] File upload and attachment
+- [ ] Code syntax highlighting
+- [ ] Markdown rendering with LaTeX support
+- [ ] Copy/paste functionality
+- [ ] Search through conversation history
+
+#### **2. System Integration Features:**
+- [ ] Real-time system monitoring dashboard
+- [ ] File system browser and editor
+- [ ] Process management interface
+- [ ] Memory exploration and search
+- [ ] Tool registry browser
+- [ ] Configuration management
+
+#### **3. Advanced Features:**
+- [ ] Session import/export
+- [ ] Memory management (pin, delete, search)
+- [ ] Custom tool creation interface
+- [ ] System command interface
+- [ ] Auto-complete for tool parameters
+- [ ] Context window management
+
+### **PERFORMANCE REQUIREMENTS**
+
+```typescript
+// Performance Specifications
+- Message rendering: < 50ms for 1000 messages
+- WebSocket reconnection: < 2 seconds
+- Tool execution updates: real-time (< 100ms)
+- File operations: progress indicators for large files
+- Memory usage: < 500MB for typical sessions
+```
+
+### **ELECTRON CONFIGURATION**
+
+```javascript
+// electron/main.js requirements
+const mainWindow = new BrowserWindow({
+  width: 1200,
+  height: 800,
+  minWidth: 800,
+  minHeight: 600,
+  webPreferences: {
+    nodeIntegration: false,
+    contextIsolation: true,
+    enableRemoteModule: false,
+    preload: path.join(__dirname, 'preload.js')
+  },
+  titleBarStyle: 'hiddenInset', // macOS style
+  frame: process.platform !== 'darwin' // Windows/Linux frame
+});
+
+// Preload script for secure backend communication
+contextBridge.exposeInMainWorld('electronAPI', {
+  openFile: () => ipcRenderer.invoke('dialog:openFile'),
+  getSystemInfo: () => ipcRenderer.invoke('system:info'),
+  // ... other secure methods
+});
+```
+
+### **DEVELOPMENT WORKFLOW**
+
+#### **1. Setup Instructions:**
+```bash
+# Development environment
+npm create vite@latest jamey-frontend -- --template react-ts
+cd jamey-frontend
+npm install tailwindcss @types/ws monaco-editor axios
+npm install -D electron electron-builder
+```
+
+#### **2. Build Configuration:**
+```javascript
+// vite.config.ts for Electron
+export default defineConfig({
+  base: './',
+  build: {
+    outDir: 'dist-react',
+  },
+  server: {
+    port: 3001,
+    proxy: {
+      '/api': 'http://localhost:3000',
+      '/ws': {
+        target: 'ws://localhost:3000',
+        ws: true
+      }
+    }
+  }
+});
+```
+
+### **TESTING REQUIREMENTS**
+
+```typescript
+// Test coverage requirements
+- Unit tests for all hooks and utilities
+- Integration tests for API communication
+- E2E tests for critical user flows
+- Performance tests for large conversations
+- Cross-platform testing (Windows, macOS, Linux)
+```
+
+### **DELIVERABLES EXPECTED**
+
+1. **Complete React TypeScript application** with all components
+2. **Electron wrapper** with proper build configuration
+3. **Full backend integration** with type-safe API clients
+4. **Real-time WebSocket implementation**
+5. **System monitoring dashboard**
+6. **Comprehensive documentation** for extension
+7. **Build scripts** for all platforms
+
+### **INTEGRATION VALIDATION**
+
+The frontend must successfully:
+- [ ] Connect to Rust backend on localhost:3000
+- [ ] Handle streaming responses from OpenRouter
+- [ ] Execute system tools through the backend
+- [ ] Display real-time system status
+- [ ] Manage long-term memory through PostgreSQL
+- [ ] Handle file operations through backend tools
+- [ ] Maintain session state across restarts
+
+---
+
+## 🎯 **CRITICAL SUCCESS FACTORS**
+
+1. **Type Safety**: Frontend types must exactly match Rust backend structs
+2. **Real-time Performance**: Smooth streaming and tool execution updates
+3. **System Integration**: Seamless connection to backend system tools
+4. **User Experience**: Claude Desktop-level polish and responsiveness
+5. **Cross-platform**: Works on Windows, macOS, and Linux
