@@ -1,6 +1,6 @@
 ## **PROJECT CONTEXT & GOAL**
 ```markdown
-Project: "Jamey Code Digital Twin" - Web-Based phoenix Desktop Alternative
+Project: "Digital Twin" - Web-Based Phoenix Desktop Alternative
 Goal: Create a web-based AI assistant with full local system integration
 Architecture: Web Frontend (React/TS) + Rust Backend (Full System Access)
 Key Insight: Browser is VIEW only, Rust backend has ALL system power
@@ -13,7 +13,7 @@ Deployment: 100% Local - Runs entirely on Windows 11 laptop
 - **Rust Backend**: Powerful system daemon with FULL access (localhost:3000)  
 - **Communication**: HTTP REST API + WebSocket for real-time updates
 - **Local Only**: Everything runs on local machine, no cloud dependencies
-- **Full Power**: Identical to phoenix Desktop but with MORE capabilities
+- **Full Power**: Identical to Phoenix Desktop but with MORE capabilities
 ```
 
 ---
@@ -206,9 +206,9 @@ const useMessageStreaming = (sessionId: string) => {
 
 ## 🎯 **SPECIFIC KNOWLEDGE & DOMAIN EXPERTISE**
 
-### **1. phoenix Desktop UX Patterns (Web Version)**
+### **1. Phoenix Desktop UX Patterns (Web Version)**
 ```typescript
-// phoenix DESKTOP UX IN WEB FORM
+// Phoenix DESKTOP UX IN WEB FORM
 - Sidebar navigation (collapsible) with session list
 - Main chat area with streaming message display
 - Bottom input bar with file attachment
@@ -334,7 +334,7 @@ PHASE 1: CORE CHAT INTERFACE (Week 1)
 1. Basic chat with message streaming from backend
 2. WebSocket connection management
 3. Message history and session management
-4. Responsive phoenix-like layout
+4. Responsive Phoenix-like layout
 
 PHASE 2: SYSTEM INTEGRATION DISPLAY (Week 2)
 1. Real-time system monitoring dashboard
@@ -353,8 +353,8 @@ PHASE 3: ADVANCED FEATURES (Week 3)
 ```bash
 # DEVELOPMENT ENVIRONMENT
 # Terminal 1 - Rust Backend (FULL SYSTEM ACCESS)
-cd jamey-code
-cargo run -p jamey-runtime
+cd digital-twin-code
+cargo run -p digital-twin-runtime
 # → http://localhost:3000
 
 # Terminal 2 - Web Frontend  
@@ -373,7 +373,7 @@ cd frontend
 npm run build  # Creates dist/ folder with static files
 
 # BACKEND SERVES FRONTEND (Single process)
-cd jamey-code
+cd digital-twin-code
 cargo run --release
 # → Serves both API (localhost:3000) and frontend static files
 ```
@@ -382,16 +382,16 @@ cargo run --release
 
 ## 🎨 **UI/UX DESIGN PRINCIPLES**
 
-### **1. phoenix Desktop Design Language (Web)**
+### **1. Phoenix Desktop Design Language (Web)**
 ```css
-/* DESIGN TOKENS - phoenix DESKTOP STYLE */
+/* DESIGN TOKENS - Phoenix DESKTOP STYLE */
 :root {
   --phoenix-sidebar-width: 280px;
   --phoenix-header-height: 60px;
   --phoenix-input-height: 120px;
   --phoenix-border-radius: 8px;
   
-  /* Colors matching phoenix Desktop */
+  /* Colors matching Phoenix Desktop */
   --phoenix-bg-primary: #ffffff;
   --phoenix-bg-secondary: #f8f9fa;
   --phoenix-border: #e1e5e9;
@@ -399,7 +399,7 @@ cargo run --release
   --phoenix-accent: #10a37f;
 }
 
-/* RESPONSIVE phoenix LAYOUT */
+/* RESPONSIVE Phoenix LAYOUT */
 .phoenix-layout {
   display: grid;
   grid-template-columns: var(--phoenix-sidebar-width) 1fr;
@@ -499,7 +499,7 @@ const useBackendHealth = () => {
 2. **Real-time Performance**: WebSocket streaming with <100ms latency  
 3. **Backend Power**: Rust backend has FULL system access - frontend is just UI
 4. **Local Experience**: Feels like native app despite being web-based
-5. **phoenix Desktop Parity**: Match or exceed phoenix Desktop UX patterns
+5. **Phoenix Desktop Parity**: Match or exceed phoenix Desktop UX patterns
 6. **System Integration**: Real file explorer, process manager, system monitoring
 7. **Responsive Design**: Works on desktop, tablet, phone (local network)
 8. **Offline Capability**: PWA features for reliable local use
@@ -508,7 +508,7 @@ const useBackendHealth = () => {
 ## **WHEN IMPLEMENTING COMPONENTS, ALWAYS:**
 - Assume backend has full system access
 - Design for web but feel like desktop
-- Match phoenix Desktop interaction patterns
+- Match Phoenix Desktop interaction patterns
 - Ensure type safety with Rust backend
 - Provide real-time feedback for all operations
 - Handle backend connectivity gracefully
