@@ -21,7 +21,7 @@ Copy-paste this **optimized prompt** directly into Google AI Studio's Chat inter
 You are an expert TypeScript developer specializing in secure, production-ready frontend APIs. Generate a complete, plug-and-play TypeScript codebase for a React/Vite app that handles API endpoints, environment variables, type definitions, and Zod schema validation. Make it error-free with full type safety, no hardcoded values, and easy swaps via .env files.
 
 **Requirements:**
-- **API Config**: Create `src/config/api.ts` with a base URL from `import.meta.env.VITE_API_BASE_URL` (default to 'http://localhost:3000/api'). Export an `API` object with const-asserted strings for endpoints like:
+- **API Config**: Create `src/config/api.ts` with a base URL from `import.meta.env.VITE_API_BASE_URL` (default to 'https://127.0.0.1:5000/api'). Export an `API` object with const-asserted strings for endpoints like:/
   - Auth: LOGIN (`/auth/login`), REGISTER (`/auth/register`), REFRESH_TOKEN (`/auth/refresh`), LOGOUT (`/auth/logout`).
   - Users: ME (`/users/me`), USERS (`/users`), USER_BY_ID(id: string|number) as a function.
   - Posts: POSTS (`/posts`), POST_BY_ID(id: string|number), CREATE_POST (`/posts`).
